@@ -45,8 +45,10 @@ class Profile(AbstractUser, PermissionsMixin):
 
 
 ##################`Product`################################
+
 class Product(models.Model):
     name = models.CharField(max_length=50)
+    catefory = models.CharField(max_length=50,default=False)
     description = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=9, decimal_places=0)
     size = models.DecimalField(max_digits=9, decimal_places=0, default=0)
