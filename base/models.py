@@ -48,7 +48,7 @@ class Profile(AbstractUser, PermissionsMixin):
 
 class Product(models.Model):
     name = models.CharField(max_length=50)
-    catefory = models.CharField(max_length=50,default=False)
+    category = models.CharField(max_length=50,default=False)
     description = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=9, decimal_places=0)
     size = models.DecimalField(max_digits=9, decimal_places=0, default=0)
@@ -72,8 +72,18 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)  # Add the quantity field
+    quantity = models.PositiveIntegerField(default=1) 
 
     def __str__(self):
         return f"CartItem: {self.product})"
 
+##################`Purchase`################################
+
+class Purchase(models.Model):
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='purchases')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    purchase_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Purchase: {self.product} by {self.user}"

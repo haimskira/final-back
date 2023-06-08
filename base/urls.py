@@ -14,7 +14,6 @@ urlpatterns = [
      path('img/<int:pk>/', views.ProfileViews.as_view()),
     path('img/', views.ProfileViews.as_view()),
 
-
     path('profile/<int:pk>/', views.ProfileViews.as_view()),
     path('profile/', views.ProfileViews.as_view()),
 
@@ -31,6 +30,10 @@ urlpatterns = [
     path('add_cart_item/', views.add_cart_item, name='add_cart_item'),
     path('postcart/update-item/<int:item_id>/', views.update_cart_item, name='update_cart_item'),
     path('postcart/delete-item/<int:item_id>/', views.delete_cart_item, name='delete_cart_item'),
+
+    path('purchase/', views.PurchaseViewSet.as_view({'post': 'create_purchase'}), name='create_purchase'),
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

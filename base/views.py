@@ -1,4 +1,4 @@
-from .models import Cart, CartItem, Product, Profile
+from .models import Cart, CartItem, Product, Profile, Purchase
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -9,7 +9,7 @@ from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
-
+from rest_framework import viewsets
 
 User = get_user_model()
 
@@ -54,7 +54,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'image','size', 'image_url']
+        fields = ['id', 'name', 'description', 'price', 'image','size','category', 'image_url']
 
 
 class ProductViews(APIView):
@@ -356,3 +356,39 @@ class ProfileViews(APIView):
             return Response(serializer.data)
 
         return Response({'error': 'Profile image not provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+##########################################PurchaseViewSet######################################################
+
+
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = ['id', 'user', 'product', 'quantity']
+
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+class PurchaseViewSet(viewsets.ModelViewSet):
+    queryset = Purchase.objects.all()
+    serializer_class = PurchaseSerializer
+
+    @action(detail=False, methods=['post'])
+    def create_purchase(self, request):
+        product_id = request.data.get('productId')
+        quantity = request.data.get('quantity')
+        user = request.user 
+
+        # Retrieve the product and create the purchase entry
+        product = Product.objects.get(pk=product_id)
+        purchase = Purchase.objects.create(user=user, product=product, quantity=quantity)
+
+        serializer = self.get_serializer(purchase)
+        return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
