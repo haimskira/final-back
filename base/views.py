@@ -54,7 +54,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'image', 'image_url']
+        fields = ['id', 'name', 'description', 'price', 'image','size', 'image_url']
 
 
 class ProductViews(APIView):
