@@ -4,6 +4,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from datetime import datetime
+from django.utils import timezone
+
 from rest_framework import status
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -251,7 +255,7 @@ class ProfileSerializer(serializers.ModelSerializer):
  
     class Meta:
         model = Profile
-        fields = ['pk', 'username', 'firstname', 'lastname', 'city', 'street', 'apartmentnumber', 'housenumber',
+        fields = ['pk', 'username', 'firstname', 'lastname','phone_number', 'city', 'street', 'apartmentnumber', 'housenumber',
                   'zipcode', 'profileimage', 'is_active', 'is_staff','email']
 
 
@@ -368,13 +372,13 @@ class PurchaseSerializer(serializers.ModelSerializer):
         model = Purchase
         fields = ['id', 'user', 'product', 'quantity']
 
-
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
 class PurchaseViewSet(viewsets.ModelViewSet):
     queryset = Purchase.objects.all()
     serializer_class = PurchaseSerializer
+    permission_classes = [IsAuthenticated] 
+
+    User = get_user_model()
+
 
     @action(detail=False, methods=['post'])
     def create_purchase(self, request):
@@ -392,3 +396,34 @@ class PurchaseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
+
+
+
+    @action(detail=False, methods=['get'])
+    def get_purchase_history(self, request):
+        user = request.user
+        purchases = Purchase.objects.select_related('product').filter(user=user)
+
+        purchase_history = []
+    
+        for purchase in purchases:
+            product = purchase.product
+            purchase_date = purchase.purchase_date.strftime('%Y-%m-%d %H:%M:%S') if purchase.purchase_date else None
+
+            purchase_data = {
+                'id': purchase.id,
+                'product_name': product.name,
+                'product_category': product.category,
+                'product_description': product.description,
+                'product_price': product.price,
+                'product_image': product.image.url if product.image else None,
+                'quantity': purchase.quantity,
+                'purchase_date': purchase_date,
+            }
+            purchase_history.append(purchase_data)
+    
+        return Response(purchase_history)
+
+
+    

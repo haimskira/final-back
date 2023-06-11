@@ -4,6 +4,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+
+
+
+
 urlpatterns = [
     path('register/', views.register, name="register"),
     # path('img/<int:pk>/', views.ProductViews.as_view()),
@@ -32,6 +36,7 @@ urlpatterns = [
     path('postcart/delete-item/<int:item_id>/', views.delete_cart_item, name='delete_cart_item'),
 
     path('purchase/', views.PurchaseViewSet.as_view({'post': 'create_purchase'}), name='create_purchase'),
+    path('profile/purchases/', views.PurchaseViewSet.as_view({'get': 'get_purchase_history'}), name='purchase-list'),
 
 
 ]
