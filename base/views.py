@@ -54,11 +54,11 @@ def get_user_id(request):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    image_url = serializers.ImageField(source='image.url')
+    # image_url = serializers.ImageField(source='image.url')
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'image','size','category', 'image_url']
+        fields = ['id', 'name', 'description', 'price', 'image','size','category']
 
 
 class ProductViews(APIView):
@@ -150,6 +150,7 @@ def add_cart_item(request):
     user = request.user
     cart = user.user_cart
     item_data = request.data
+    print("Add cart item")
 
     product_id = item_data.get('product')
     existing_item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
@@ -174,29 +175,31 @@ def add_cart_item(request):
     return Response(response_data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
-def post_user_cart(request):
-    user = request.user
-    cart = user.user_cart
+# @api_view(['POST'])
+# def post_user_cart(request):
+#     user = request.user
+#     cart = user.user_cart
+#     print("posting user cart")
 
-    if request.method == 'POST':
-        cart_items_data = request.data.get('cartItems', [])
-        existing_items = CartItem.objects.filter(cart=cart)
 
-        # Check if each item already exists in the cart
-        for item_data in cart_items_data:
-            product_id = item_data.get('product')
-            if existing_items.filter(product_id=product_id).exists():
-                # Skip saving the item if it already exists in the cart
-                continue
-            item_data['cart'] = cart.id
-            serializer = PostCartItemSerializer(data=item_data)
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     if request.method == 'POST':
+#         cart_items_data = request.data.get('cartItems', [])
+#         existing_items = CartItem.objects.filter(cart=cart)
 
-        return Response({'message': 'Cart items created successfully'}, status=status.HTTP_201_CREATED)
+#         # Check if each item already exists in the cart
+#         for item_data in cart_items_data:
+#             product_id = item_data.get('product')
+#             if existing_items.filter(product_id=product_id).exists():
+#                 # Skip saving the item if it already exists in the cart
+#                 continue
+#             item_data['cart'] = cart.id
+#             serializer = PostCartItemSerializer(data=item_data)
+#             if serializer.is_valid():
+#                 serializer.save()
+#             else:
+#                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         return Response({'message': 'Cart items created successfully'}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
