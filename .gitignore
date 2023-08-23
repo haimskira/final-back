@@ -1,0 +1,25 @@
+# Ignore virtual environment files
+venv/
+myenv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+
+# Ignore environment-specific files
+.env
+.env.*
+
+# Ignore pipenv files
+Pipfile
+Pipfile.lock
+
+# Ignore poetry files
+pyproject.toml
+poetry.lock
+
+# Ignore conda files
+environment.yml
